@@ -2,13 +2,14 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"go-jeager-mcsrvs-example/worker/config"
 	"go-jeager-mcsrvs-example/worker/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -35,8 +36,7 @@ func (server *Controller) SummHandler(c *gin.Context) {
 
 	var data models.Request
 	if err := c.BindJSON(&data); err != nil {
-		span.SetStatus(codes.Error, err.Error())
-		span.RecordError(err)
+		logrus.WithContext(ctx).WithError(err).Error("parse failed")
 		c.JSON(400, gin.H{
 			"error": err.Error(),
 		})
@@ -63,8 +63,8 @@ func (server *Controller) MultiHandler(c *gin.Context) {
 
 	var data models.Request
 	if err := c.BindJSON(&data); err != nil {
-		span.SetStatus(codes.Error, err.Error())
-		span.RecordError(err)
+		// logrus.WithContext(ctx).WithError(fmt.Errorf("parse failed: %w", err)) // вот так хук не активируется
+		logrus.WithContext(ctx).Error(fmt.Errorf("parse failed: %w", err))
 		c.JSON(400, gin.H{
 			"error": err.Error(),
 		})

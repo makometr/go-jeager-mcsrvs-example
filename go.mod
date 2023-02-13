@@ -19,9 +19,13 @@ require (
 	github.com/opentracing-contrib/go-gin v0.0.0-20201220185307-1dd2273433a4 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
+	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/ugorji/go/codec v1.2.9 // indirect
+	github.com/uptrace/opentelemetry-go-extra v0.1.21 // indirect
+	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
+	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21 // indirect
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.39.0 // indirect
 	go.opentelemetry.io/otel v1.13.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.13.0 // indirect
