@@ -2,8 +2,8 @@ package controller
 
 import (
 	"context"
-	"go-jeager-mcsrvs-example/worker/config"
-	"go-jeager-mcsrvs-example/worker/models"
+	"go-jeager-mcsrvs-example/proxy/config"
+	"go-jeager-mcsrvs-example/proxy/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -24,11 +24,11 @@ type Controller struct {
 func New(cfg config.Config, calculator Calculator) *Controller {
 	return &Controller{
 		calc:   calculator,
-		tracer: otel.Tracer("http-server-worker"), // это просто отображается в спане как otel.library.name
+		tracer: otel.Tracer("http-server"), // это просто отображается в спане как otel.library.name
 	}
 }
 
-func (server *Controller) SummHandler(c *gin.Context) {
+func (server *Controller) ProxySummHandler(c *gin.Context) {
 	ctx, span := server.tracer.Start(c.Request.Context(), "server SummHandler")
 	defer span.End()
 
