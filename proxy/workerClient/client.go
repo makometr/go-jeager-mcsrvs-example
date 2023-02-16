@@ -44,6 +44,7 @@ func (client *WorkerClient) SummIntegers(ctx context.Context, data []int) (int, 
 		logrus.WithContext(ctx).Error(err)
 		return 0, err
 	}
+	req.Header.Set("x-trace-id", span.SpanContext().TraceID().String())
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
