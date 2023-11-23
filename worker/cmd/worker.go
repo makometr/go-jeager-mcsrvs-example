@@ -57,7 +57,7 @@ func main() {
 	controller := controller.New(config, calcEngine)
 
 	router := gin.Default()
-	router.Use(GinInjectTraceID)
+	// router.Use(GinInjectTraceID)
 	router.Use(otelgin.Middleware("worker-http-server")) // внутри спана помечается как net.host.name
 	router.POST("/summ", controller.SummHandler)
 
@@ -81,12 +81,25 @@ func GinInjectTraceID(ctx *gin.Context) {
 		logrus.Error(err)
 		return
 	}
+
+	spanIdString := ctx.Request.Header.Get("x-span-id")
+	logrus.Info(logrus.Fields{
+		"spanIdString": spanIdString,
+	})
+	spanId, err := trace.SpanIDFromHex(spanIdString)
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
 	// Creating a span context with a predefined trace-id
 	spanContext := trace.NewSpanContext(trace.SpanContextConfig{
 		TraceID: traceId,
+		SpanID:  spanId,
+		Remote:  true,
 	})
 	// Embedding span config into the context
 	newCtx := trace.ContextWithSpanContext(ctx.Request.Context(), spanContext)
+
 	// Replace original request with new one with new ctx
 	ctx.Request = ctx.Request.WithContext(newCtx)
 }

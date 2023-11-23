@@ -42,6 +42,16 @@ func (server *Controller) SummHandler(c *gin.Context) {
 	}
 	span.SetAttributes(attribute.IntSlice("data", data.Numbers))
 
+	if data.Numbers == nil {
+		c.XML(400, gin.H{
+			"msg": "nastay, privet",
+		})
+		return
+	}
+
+	db.setUser(id)\
+	selct from user where id = $id
+
 	result, err := server.calc.SummIntegers(ctx, data.Numbers)
 	if err != nil {
 		c.JSON(500, gin.H{

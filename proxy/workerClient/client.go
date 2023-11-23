@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -39,18 +40,28 @@ func (client *WorkerClient) SummIntegers(ctx context.Context, data []int) (int, 
 	}
 	bodyReader := bytes.NewReader(bodyBytes)
 
-	req, err := http.NewRequest(http.MethodPost, client.URL+"/summ", bodyReader)
-	if err != nil {
-		logrus.WithContext(ctx).Error(err)
-		return 0, err
-	}
-	req.Header.Set("x-trace-id", span.SpanContext().TraceID().String())
+	httpClient := http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
+	req, _ := http.NewRequestWithContext(ctx, "POST", client.URL+"/summ", bodyReader)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := httpClient.Do(req)
 	if err != nil {
 		logrus.WithContext(ctx).WithError(err).Error("client: error making http request")
 		return 0, err
 	}
+
+	// req, err := http.NewRequest(http.MethodPost, client.URL+"/summ", bodyReader)
+	// if err != nil {
+	// 	logrus.WithContext(ctx).Error(err)
+	// 	return 0, err
+	// }
+	// // req.Header.Set("x-trace-id", span.SpanContext().TraceID().String())
+	// // req.Header.Set("x-span-id", span.SpanContext().SpanID().String())
+
+	// res, err := http.DefaultClient.Do(req)
+	// if err != nil {
+	// 	logrus.WithContext(ctx).WithError(err).Error("client: error making http request")
+	// 	return 0, err
+	// }
 
 	resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
